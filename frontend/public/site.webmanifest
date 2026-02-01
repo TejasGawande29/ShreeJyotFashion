@@ -1,0 +1,14 @@
+{
+  "name": "Shreejyot Fashion",
+  "short_name": "Shreejyot",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#C9A050",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

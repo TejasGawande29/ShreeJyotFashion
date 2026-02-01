@@ -1,0 +1,239 @@
+# ========================================
+# Shreejyot Fashion - Git Ignore
+# ========================================
+
+# ========================================
+# ENVIRONMENT VARIABLES (CRITICAL - NEVER COMMIT)
+# ========================================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+**/.env
+**/.env.local
+
+# ========================================
+# NODE.JS
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Package manager lock files (optional - team preference)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ========================================
+# NEXT.JS
+# ========================================
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# ========================================
+# REACT
+# ========================================
+build/
+.cache/
+
+# ========================================
+# LOGS
+# ========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ========================================
+# DATABASE
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+*.sql.backup
+database/backups/
+pg_data/
+
+# ========================================
+# UPLOADS & MEDIA
+# ========================================
+uploads/
+temp/
+tmp/
+public/uploads/
+backend/uploads/
+
+# ========================================
+# TESTING
+# ========================================
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+junit.xml
+test-results/
+
+# ========================================
+# IDE & EDITORS
+# ========================================
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+
+# ========================================
+# OPERATING SYSTEMS
+# ========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# ========================================
+# CERTIFICATES & KEYS (CRITICAL)
+# ========================================
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+ssl/
+certificates/
+secrets/
+
+# ========================================
+# AWS & CLOUD
+# ========================================
+.aws/
+.elasticbeanstalk/
+.serverless/
+
+# ========================================
+# DOCKER
+# ========================================
+docker-compose.override.yml
+.dockerignore
+
+# ========================================
+# MISCELLANEOUS
+# ========================================
+.cache/
+.parcel-cache/
+.vercel
+.turbo
+*.tgz
+.npm
+.eslintcache
+.stylelintcache
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ========================================
+# BACKUP FILES
+# ========================================
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.save
+*~
+
+# ========================================
+# TEMPORARY FILES
+# ========================================
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ========================================
+# SENSITIVE BUSINESS DATA
+# ========================================
+customer-data/
+financial-reports/
+private-docs/
+
+# ========================================
+# BUILD ARTIFACTS
+# ========================================
+*.map
+*.gz
+*.zip
+*.tar
+*.rar
+
+# ========================================
+# PROJECT SPECIFIC
+# ========================================
+# Keep example env files
+!.env.example
+!**/.env.example
+
+# Keep documentation
+!docs/
+!README.md
+!*.md
