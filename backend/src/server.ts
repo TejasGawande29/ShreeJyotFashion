@@ -1,5 +1,5 @@
 import app from './app';
-import { connectDatabase } from './config/database';
+import { connectDatabase, sequelize } from './config/database';
 import { initializeElasticsearch } from './config/elasticsearch';
 import './models'; // Import models to initialize associations
 
@@ -10,6 +10,14 @@ const startServer = async () => {
   try {
     // Connect to database
     await connectDatabase();
+
+    // Sync database models (create tables if they don't exist)
+    // Use { alter: true } in development to update tables, { force: true } to drop and recreate
+    if (process.env.DB_SYNC === 'true') {
+      console.log('🔄 Syncing database models...');
+      await sequelize.sync({ alter: true });
+      console.log('✅ Database models synced successfully');
+    }
 
     // Initialize Elasticsearch (non-blocking)
     initializeElasticsearch().catch((error) => {
