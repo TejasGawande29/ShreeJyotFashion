@@ -4,13 +4,50 @@ This guide covers deploying the application to production.
 
 ## Architecture
 
-- **Frontend**: Cloudflare Pages (Next.js)
-- **Backend**: Render (Express.js)  
+- **Frontend**: Vercel (Next.js) - FREE
+- **Backend**: Render (Express.js) - FREE  
 - **Database**: Render PostgreSQL (already configured)
 
 ---
 
-## 1. Deploy Backend to Render
+## 1. Deploy Frontend to Vercel (FREE)
+
+### Step 1: Push to GitHub
+
+Make sure your frontend code is pushed to GitHub.
+
+### Step 2: Connect to Vercel
+
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+2. Click **"Add New..."** → **"Project"**
+3. Import your repository: `TejasGawande29/ShreeJyotFashion`
+
+### Step 3: Configure Build Settings
+
+- **Framework Preset**: Next.js (auto-detected)
+- **Root Directory**: `frontend`
+- **Build Command**: `npm run build`
+- **Output Directory**: `.next` (auto)
+- **Install Command**: `npm install`
+
+### Step 4: Environment Variables
+
+Add these in Vercel Project Settings → Environment Variables:
+
+| Variable | Value |
+|----------|-------|
+| `NEXT_PUBLIC_APP_NAME` | Shreejyot Fashion |
+| `NEXT_PUBLIC_API_URL` | https://shreejyot-fashion-api.onrender.com/api |
+| `NEXT_PUBLIC_SITE_URL` | https://shreejyot-fashion.vercel.app |
+
+### Step 5: Deploy
+
+Click **"Deploy"**. Your site will be live at:
+`https://shreejyot-fashion.vercel.app`
+
+---
+
+## 2. Deploy Backend to Render (FREE)
 
 ### Option A: Using Render Dashboard (Recommended)
 
@@ -38,57 +75,12 @@ This guide covers deploying the application to production.
 
 6. Click **"Create Web Service"**
 
-### Option B: Using render.yaml Blueprint
-
-1. Push your code with `render.yaml` to GitHub
-2. Go to Render Dashboard → **"Blueprints"**
-3. Connect your repository
-4. Render will auto-detect and deploy
-
----
-
-## 2. Deploy Frontend to Cloudflare Pages
-
-### Step 1: Push to GitHub
-
-Make sure your frontend code is pushed to GitHub.
-
-### Step 2: Connect to Cloudflare Pages
-
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Select **"Workers & Pages"** → **"Create Application"** → **"Pages"**
-3. Connect your GitHub account and select the repository
-
-### Step 3: Configure Build Settings
-
-- **Project name**: `shreejyot-fashion`
-- **Production branch**: `main`
-- **Framework preset**: Next.js
-- **Root directory**: `frontend`
-- **Build command**: `npm run build`
-- **Build output directory**: `.next`
-
-### Step 4: Environment Variables
-
-Add these in Cloudflare Pages settings:
-
-| Variable | Value |
-|----------|-------|
-| `NEXT_PUBLIC_APP_NAME` | Shreejyot Fashion |
-| `NEXT_PUBLIC_API_URL` | https://shreejyot-fashion-api.onrender.com |
-| `NODE_VERSION` | 18 |
-
-### Step 5: Deploy
-
-Click **"Save and Deploy"**. Your site will be live at:
-`https://shreejyot-fashion.pages.dev`
-
 ---
 
 ## 3. Custom Domain (Optional)
 
-### For Cloudflare Pages (Frontend):
-1. Go to your Pages project → **"Custom domains"**
+### For Vercel (Frontend):
+1. Go to your Vercel project → **"Settings"** → **"Domains"**
 2. Add your domain (e.g., `www.shreejyotfashion.com`)
 3. Follow DNS configuration steps
 
@@ -123,10 +115,11 @@ REFRESH_TOKEN_SECRET=<secure-random-string>
 FRONTEND_URL=https://your-frontend-domain.com
 ```
 
-### Frontend (Cloudflare Pages)
+### Frontend (Vercel)
 ```env
 NEXT_PUBLIC_APP_NAME=Shreejyot Fashion
-NEXT_PUBLIC_API_URL=https://your-api.onrender.com
+NEXT_PUBLIC_API_URL=https://your-api.onrender.com/api
+NEXT_PUBLIC_SITE_URL=https://shreejyot-fashion.vercel.app
 ```
 
 ---
@@ -139,9 +132,14 @@ NEXT_PUBLIC_API_URL=https://your-api.onrender.com
 - Make sure all required env vars are set
 
 ### Frontend API calls failing?
-- Check CORS - `FRONTEND_URL` must match your frontend domain
+- Check CORS - `FRONTEND_URL` must match your Vercel domain
 - Verify `NEXT_PUBLIC_API_URL` points to your Render backend
 - Check browser console for CORS errors
+
+### Vercel build failing?
+- Check build logs in Vercel dashboard
+- Ensure root directory is set to `frontend`
+- Verify all environment variables are set
 
 ### Database connection issues?
 - Render free tier DBs sleep after 15 mins of inactivity

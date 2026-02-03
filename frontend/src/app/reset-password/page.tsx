@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthLayout from '@/components/auth/AuthLayout';
@@ -8,7 +8,7 @@ import PasswordStrengthIndicator from '@/components/auth/PasswordStrengthIndicat
 import { toast, toastMessages } from '@/utils/toast';
 import { FiLock, FiEye, FiEyeOff, FiCheck, FiAlertCircle } from 'react-icons/fi';
 
-export default function ResetPasswordPage() {
+function ResetPasswordPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState('');
@@ -314,5 +314,26 @@ export default function ResetPasswordPage() {
         </p>
       </div>
     </AuthLayout>
+  );
+}
+
+function ResetPasswordLoading() {
+  return (
+    <AuthLayout
+      title="Reset Your Password"
+      subtitle="Loading..."
+    >
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+      </div>
+    </AuthLayout>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<ResetPasswordLoading />}>
+      <ResetPasswordPageContent />
+    </Suspense>
   );
 }

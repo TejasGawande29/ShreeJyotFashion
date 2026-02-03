@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Breadcrumb, type BreadcrumbItem } from '@/components/common/Breadcrumb';
 import { ProductHeader, type SortOption } from '@/components/products/ProductHeader';
@@ -79,7 +79,7 @@ const generateMockProducts = (): Product[] => {
   return products;
 };
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -334,5 +334,25 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProductsLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center py-24">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<ProductsLoading />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

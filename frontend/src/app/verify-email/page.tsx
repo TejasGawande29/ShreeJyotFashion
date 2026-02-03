@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
@@ -9,37 +9,18 @@ import AuthLayout from '@/components/auth/AuthLayout';
 import { toast, toastMessages } from '@/utils/toast';
 import { FiMail, FiCheck, FiAlertCircle, FiLoader } from 'react-icons/fi';
 
-export default function VerifyEmailPage() {
+function VerifyEmailPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'success' | 'error'>('pending');
 
-  // Extract email and token from URL
-  useEffect(() => {
-    const emailParam = searchParams?.get('email');
-    const tokenParam = searchParams?.get('token');
-
-    if (emailParam) {
-      setEmail(emailParam);
-    } else if (user?.email) {
-      setEmail(user.email);
-    }
-
-    if (tokenParam) {
-      setToken(tokenParam);
-      // Auto-verify if token is present
-      handleVerification(tokenParam);
-    }
-  }, [searchParams, user]);
-
-  const handleVerification = async (verificationToken: string) => {
+  const handleVerification = useCallback(async (verificationToken: string) => {
     setIsVerifying(true);
     setVerificationStatus('pending');
 
@@ -57,13 +38,30 @@ export default function VerifyEmailPage() {
       setTimeout(() => {
         router.push('/');
       }, 3000);
-    } catch (err) {
+    } catch {
       setVerificationStatus('error');
       toast.error(toastMessages.auth.emailVerifyError);
     } finally {
       setIsVerifying(false);
     }
-  };
+  }, [dispatch, router]);
+
+  // Extract email and token from URL
+  useEffect(() => {
+    const emailParam = searchParams?.get('email');
+    const tokenParam = searchParams?.get('token');
+
+    if (emailParam) {
+      setEmail(emailParam);
+    } else if (user?.email) {
+      setEmail(user.email);
+    }
+
+    if (tokenParam) {
+      // Auto-verify if token is present
+      handleVerification(tokenParam);
+    }
+  }, [searchParams, user, handleVerification]);
 
   const handleResendEmail = async () => {
     setIsResending(true);
@@ -72,7 +70,7 @@ export default function VerifyEmailPage() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success(toastMessages.auth.emailSent);
-    } catch (err) {
+    } catch {
       toast.error(toastMessages.auth.emailSendError);
     } finally {
       setIsResending(false);
@@ -266,5 +264,26 @@ export default function VerifyEmailPage() {
         </p>
       </div>
     </AuthLayout>
+  );
+}
+
+function VerifyEmailLoading() {
+  return (
+    <AuthLayout
+      title="Verify Your Email"
+      subtitle="Loading..."
+    >
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+      </div>
+    </AuthLayout>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<VerifyEmailLoading />}>
+      <VerifyEmailPageContent />
+    </Suspense>
   );
 }
