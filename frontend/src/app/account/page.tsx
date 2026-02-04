@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppSelector } from '@/lib/redux/hooks';
 import AccountLayout from '@/components/account/AccountLayout';
 import { ProtectedRoute } from '@/components/common/ProtectedRoute';
+import api from '@/lib/api';
 import { 
   FiShoppingBag, 
   FiPackage, 
@@ -25,6 +26,11 @@ function AccountPage() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const myRentals = useAppSelector((state) => state.rental.myRentals);
+  
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalAddresses, setTotalAddresses] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -32,6 +38,39 @@ function AccountPage() {
       router.push('/login?redirect=/account');
     }
   }, [isAuthenticated, router]);
+
+  // Fetch user data
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserData();
+    }
+  }, [isAuthenticated]);
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch orders
+      const ordersRes = await api.get('/orders/my-orders?limit=2');
+      setRecentOrders(ordersRes.data.orders || []);
+      setTotalOrders(ordersRes.data.total || 0);
+
+      // Fetch addresses
+      try {
+        const addressRes = await api.get('/user-profile/addresses');
+        setTotalAddresses(addressRes.data.length || 0);
+      } catch (err) {
+        // Addresses endpoint might not exist, set to 0
+        setTotalAddresses(0);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setRecentOrders([]);
+      setTotalOrders(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -41,30 +80,10 @@ function AccountPage() {
     );
   }
 
-  // Mock recent orders data
-  const recentOrders = [
-    {
-      id: 'ORD-2025-001',
-      date: '2025-10-15',
-      status: 'delivered',
-      items: 3,
-      total: 2499,
-      image: '/api/placeholder/100/100',
-    },
-    {
-      id: 'ORD-2025-002',
-      date: '2025-10-18',
-      status: 'processing',
-      items: 2,
-      total: 1799,
-      image: '/api/placeholder/100/100',
-    },
-  ];
-
   const stats = [
     {
       label: 'Total Orders',
-      value: '12',
+      value: totalOrders.toString(),
       icon: FiShoppingBag,
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50',
@@ -88,7 +107,7 @@ function AccountPage() {
     },
     {
       label: 'Saved Addresses',
-      value: '3',
+      value: totalAddresses.toString(),
       icon: FiMapPin,
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50',
@@ -228,7 +247,12 @@ function AccountPage() {
           </Link>
         </div>
 
-        {recentOrders.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+            <p className="text-gray-600 mt-4">Loading orders...</p>
+          </div>
+        ) : recentOrders.length === 0 ? (
           <div className="text-center py-12">
             <FiShoppingBag className="w-12 h-12 text-gray-400 mx-auto mb-3" />
             <p className="text-gray-600 mb-4">No orders yet</p>
@@ -254,16 +278,16 @@ function AccountPage() {
                 {/* Order Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="font-semibold text-gray-900">{order.id}</p>
+                    <p className="font-semibold text-gray-900">Order #{order.id}</p>
                     <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(order.status)}`}>
                       {order.status}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-1">
-                    {order.items} items • ₹{order.total.toLocaleString()}
+                    ₹{order.total_amount?.toLocaleString() || 0}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Ordered on {new Date(order.date).toLocaleDateString('en-IN', {
+                    Ordered on {new Date(order.created_at).toLocaleDateString('en-IN', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric'
@@ -273,7 +297,7 @@ function AccountPage() {
 
                 {/* Action */}
                 <Link
-                  href={`/account/orders/${order.id}`}
+                  href={`/account/orders`}
                   className="flex-shrink-0 px-4 py-2 text-sm font-medium text-pink-600 hover:text-pink-700 border border-pink-200 rounded-lg hover:bg-pink-50 transition-colors"
                 >
                   View Details
