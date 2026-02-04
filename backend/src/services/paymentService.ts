@@ -18,6 +18,11 @@ export const createPaymentOrder = async (
   paymentMethod: PaymentMethod
 ): Promise<{ razorpayOrder: any; payment: Payment }> => {
   try {
+    // Check if Razorpay is configured
+    if (!razorpayInstance) {
+      throw new Error('Payment gateway not configured. Please contact support.');
+    }
+
     // Verify order exists and belongs to user
     const order = await Order.findOne({ where: { id: orderId, user_id: userId } });
     if (!order) {
@@ -183,6 +188,10 @@ export const capturePayment = async (
   captureAmount?: number
 ): Promise<Payment> => {
   try {
+    if (!razorpayInstance) {
+      throw new Error('Payment gateway not configured');
+    }
+
     const payment = await Payment.findByPk(paymentId);
     if (!payment) {
       throw new Error('Payment not found');
@@ -233,6 +242,10 @@ export const createRefund = async (
   reason?: string
 ): Promise<Payment> => {
   try {
+    if (!razorpayInstance) {
+      throw new Error('Payment gateway not configured');
+    }
+
     const payment = await Payment.findByPk(paymentId);
     if (!payment) {
       throw new Error('Payment not found');
